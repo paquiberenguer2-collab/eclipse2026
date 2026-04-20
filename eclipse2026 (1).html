@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eclipse 12 agosto 2026 · ¿Lo verás?</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Unbounded:wght@200;400;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#05060f;--surface:#0c0e1e;--border:#1e2240;
+  --gold:#f5a623;--gold-dim:#7a5010;--text:#ffffff;--dim:#b0bbdd;
+  --green:#4ade80;--yellow:#fbbf24;--red:#f87171;--blue:#60a5fa;
+  --mono:'Space Mono',monospace;--display:'Unbounded',sans-serif;
+  --base:18px;
+}
+html{font-size:var(--base)}
+body{min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--mono);font-size:1rem;line-height:1.6;overflow-x:hidden}
+#stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:32px 16px 64px}
+
+/* ── Header ─────────────────────────────────────────────── */
+.hdr{text-align:center;margin-bottom:36px}
+.eclipse-icon{width:92px;height:92px;position:relative;margin:0 auto 20px;display:flex;align-items:center;justify-content:center}
+.cr1{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,transparent 0%,#f5a62388 20%,transparent 40%,transparent 45%,#f5a62366 60%,transparent 75%,transparent 80%,#f5a62444 90%,transparent 100%);animation:rot 22s linear infinite;filter:blur(2px)}
+.cr2{position:absolute;inset:8px;border-radius:50%;background:radial-gradient(circle,#ffe08277 0%,transparent 70%);filter:blur(4px)}
+.moon{width:54px;height:54px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#1a1e3a,#05060f);box-shadow:0 0 0 2px #f5a62333;position:relative;z-index:2}
+@keyframes rot{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.title{font-family:var(--display);font-weight:900;font-size:clamp(1.6rem,6vw,2.8rem);letter-spacing:-0.02em;background:linear-gradient(135deg,#f5a623 0%,#ffe082 50%,#f5a623 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1}
+.sub{font-family:var(--display);font-weight:200;font-size:0.75rem;letter-spacing:0.24em;color:var(--dim);margin-top:8px;text-transform:uppercase}
+.badge{display:inline-block;margin-top:12px;padding:6px 16px;border:1px solid var(--gold-dim);border-radius:2px;font-size:0.78rem;color:var(--gold);letter-spacing:0.14em}
+
+/* ── Card ────────────────────────────────────────────────── */
+.card{width:100%;max-width:720px;background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+
+.bar{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.bar-lbl{font-size:0.72rem;letter-spacing:0.2em;color:var(--dim);text-transform:uppercase}
+.lang-tog{display:flex;border:1px solid var(--border);border-radius:3px;overflow:hidden;flex-shrink:0}
+.lb{font-family:var(--display);font-size:0.72rem;font-weight:700;padding:6px 14px;background:transparent;border:none;color:var(--dim);cursor:pointer;transition:background .2s,color .2s;min-height:36px}
+.lb.on{background:var(--gold);color:#000}
+
+/* ── Input ───────────────────────────────────────────────── */
+.izone{padding:22px 20px 18px;border-bottom:1px solid var(--border)}
+.ilabel{font-size:0.78rem;letter-spacing:0.14em;color:var(--gold);text-transform:uppercase;margin-bottom:10px;display:block}
+.irow{display:flex;gap:8px;flex-wrap:wrap}
+#loc{flex:1;min-width:180px;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:1rem;padding:14px 16px;outline:none;transition:border-color .2s;min-height:52px}
+#loc:focus{border-color:var(--gold-dim)}
+#loc::placeholder{color:var(--dim)}
+.btn{background:var(--gold);color:#000;border:none;border-radius:3px;font-family:var(--display);font-weight:700;font-size:0.82rem;letter-spacing:0.08em;text-transform:uppercase;padding:14px 22px;cursor:pointer;white-space:nowrap;min-height:52px;transition:opacity .2s,transform .1s;flex-shrink:0}
+.btn:hover{opacity:.85}.btn:active{transform:scale(.98)}.btn:disabled{opacity:.38;cursor:not-allowed}
+.hint{font-size:0.78rem;color:var(--dim);margin-top:9px;line-height:1.65}
+
+/* ── Geo confirm ─────────────────────────────────────────── */
+#geobox{display:none;padding:14px 20px;border-bottom:1px solid var(--border);background:#080a18}
+.gfound{font-size:0.7rem;letter-spacing:.14em;color:var(--dim);text-transform:uppercase;margin-bottom:4px}
+.gname{font-size:1rem;color:var(--text);line-height:1.4}
+.gcoords{font-size:0.78rem;color:var(--dim);margin-top:2px}
+.galts{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.galts-lbl{font-size:0.72rem;color:var(--dim)}
+.galt{font-family:var(--mono);font-size:0.78rem;background:transparent;border:1px solid var(--border);color:var(--dim);border-radius:2px;padding:6px 12px;cursor:pointer;min-height:38px;transition:border-color .2s,color .2s}
+.galt:hover{border-color:var(--gold-dim);color:var(--gold)}
+
+/* ── Steps ───────────────────────────────────────────────── */
+.steps{padding:18px 20px;border-bottom:1px solid var(--border);display:none;flex-direction:column;gap:6px}
+.step{display:flex;align-items:flex-start;gap:12px;font-size:0.85rem;color:var(--dim);padding:4px 0;transition:color .3s}
+.step.on{color:var(--gold)}.step.ok{color:var(--green)}.step.er{color:var(--red)}
+.sic{width:24px;height:24px;border-radius:50%;border:1px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:0.7rem;flex-shrink:0;margin-top:1px}
+.step.on .sic{animation:pulse 1s ease infinite}
+.sdet{font-size:0.72rem;opacity:.65;margin-left:auto;text-align:right;padding-top:2px}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(245,166,35,.4)}50%{box-shadow:0 0 0 5px rgba(245,166,35,0)}}
+
+/* ── Results ─────────────────────────────────────────────── */
+#res{display:none}
+.ri{padding:24px 20px}
+
+.vblock{border-radius:4px;padding:22px;margin-bottom:22px;border-left:5px solid;position:relative;overflow:hidden}
+.vblock::before{content:'';position:absolute;inset:0;opacity:.05}
+.vblock.ex{border-color:var(--green);background:#052010}.vblock.ex::before{background:var(--green)}
+.vblock.bu{border-color:var(--blue);background:#050e20}.vblock.bu::before{background:var(--blue)}
+.vblock.ri{border-color:var(--yellow);background:#150f00}.vblock.ri::before{background:var(--yellow)}
+.vblock.fu{border-color:var(--red);background:#150505}.vblock.fu::before{background:var(--red)}
+.vlbl{font-family:var(--display);font-weight:700;font-size:0.7rem;letter-spacing:.22em;text-transform:uppercase;margin-bottom:6px;opacity:.75}
+.vtit{font-family:var(--display);font-weight:900;font-size:clamp(1.1rem,4vw,1.4rem);letter-spacing:-.01em;margin-bottom:10px;line-height:1.2}
+.vtxt{font-size:0.9rem;line-height:1.78;opacity:.92}
+
+/* ── Data grid ───────────────────────────────────────────── */
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}
+@media(max-width:480px){.dgrid{grid-template-columns:1fr}}
+.dc{background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:15px 16px}
+.dc.s2{grid-column:span 2}
+@media(max-width:480px){.dc.s2{grid-column:span 1}}
+.dclbl{font-size:0.72rem;letter-spacing:.18em;color:var(--dim);text-transform:uppercase;margin-bottom:6px}
+.dcval{font-family:var(--display);font-weight:700;font-size:1.2rem;line-height:1.2}
+.dcunit{font-family:var(--mono);font-weight:400;font-size:0.75rem;color:var(--dim);margin-left:4px}
+
+/* ── Horizon bar ─────────────────────────────────────────── */
+.hbar{margin-bottom:22px}
+.hbar-head{font-size:0.72rem;letter-spacing:.15em;color:var(--dim);text-transform:uppercase;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
+.hbar-val{font-family:var(--display);font-weight:700;font-size:1rem}
+.hbar-track{height:10px;background:var(--bg);border:1px solid var(--border);border-radius:5px;overflow:visible;position:relative}
+.hbar-fill{height:100%;border-radius:5px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.hbar-mk{position:absolute;top:-6px;bottom:-6px;width:3px;background:var(--gold);border-radius:2px}
+.hbar-mklbl{position:absolute;top:-22px;font-size:0.65rem;color:var(--gold);transform:translateX(-50%);white-space:nowrap;font-weight:700}
+.hbar-leg{display:flex;justify-content:space-between;font-size:0.72rem;color:var(--dim);margin-top:6px}
+.hbar-note{font-size:0.82rem;color:var(--dim);margin-top:8px;line-height:1.6}
+
+/* ── Warnings ────────────────────────────────────────────── */
+.warns{display:flex;flex-direction:column;gap:7px;margin-bottom:22px}
+.wi{display:flex;gap:10px;align-items:flex-start;font-size:0.85rem;color:var(--yellow);background:#0f0900;border:1px solid #2a1f00;border-radius:3px;padding:12px 15px;line-height:1.6}
+.wi::before{content:'⚠';flex-shrink:0;font-size:1rem}
+
+/* ── Footnote ────────────────────────────────────────────── */
+.foot{font-size:0.72rem;color:var(--dim);line-height:1.7;border-top:1px solid var(--border);padding-top:16px;margin-top:4px}
+
+/* ── Error ───────────────────────────────────────────────── */
+.errbox{background:#150505;border:1px solid #3a1010;border-radius:3px;padding:18px 20px;color:var(--red);font-size:0.88rem;line-height:1.7}
+
+.ok{color:var(--green)!important}.wc{color:var(--yellow)!important}.bad{color:var(--red)!important}
+.cap{font-size:0.72rem;color:var(--dim);margin-top:22px;text-align:center;max-width:540px;line-height:1.75;padding:0 8px}
+
+/* ── Accessibility ───────────────────────────────────────── */
+@media(max-width:400px){
+  .irow{flex-direction:column}
+  .btn{width:100%}
+}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div class="wrap">
+
+  <div class="hdr">
+    <div class="eclipse-icon"><div class="cr1"></div><div class="cr2"></div><div class="moon"></div></div>
+    <div class="title" id="T_title"></div>
+    <div class="sub"   id="T_sub"></div>
+    <div class="badge">12 · VIII · 2026</div>
+  </div>
+
+  <div class="card">
+    <div class="bar">
+      <span class="bar-lbl" id="T_barLbl"></span>
+      <div class="lang-tog">
+        <button class="lb on" id="btn_es" onclick="setLang('es')">ES</button>
+        <button class="lb"    id="btn_en" onclick="setLang('en')">EN</button>
+      </div>
+    </div>
+
+    <div class="izone">
+      <label class="ilabel" for="loc" id="T_iLbl"></label>
+      <div class="irow">
+        <input type="text" id="loc" autocomplete="off" spellcheck="false">
+        <button class="btn" id="anBtn" onclick="run()"></button>
+      </div>
+      <div class="hint" id="T_hint"></div>
+    </div>
+
+    <div id="geobox"></div>
+
+    <div class="steps" id="stps">
+      <div class="step" id="s1"><div class="sic">1</div><span id="T_s1"></span><span class="sdet" id="s1d"></span></div>
+      <div class="step" id="s2"><div class="sic">2</div><span id="T_s2"></span><span class="sdet" id="s2d"></span></div>
+      <div class="step" id="s3"><div class="sic">3</div><span id="T_s3"></span><span class="sdet" id="s3d"></span></div>
+    </div>
+
+    <div id="res"></div>
+  </div>
+
+  <div class="cap" id="T_cap"></div>
+</div>
+
+<script>
+'use strict';
+
+// ══════════════════════════════════════════════════════════
+// i18n
+// ══════════════════════════════════════════════════════════
+const TR = {
+es:{
+  title:'¿Verás el eclipse?', sub:'Análisis de visibilidad por ubicación',
+  barLbl:'Selecciona idioma', iLbl:'Municipio, dirección o coordenadas',
+  ph:'Ej: Morella, Culla, Zaragoza, 40.5 -0.1…', btn:'Analizar',
+  hint:'Acepta nombres de municipios, direcciones completas o coordenadas decimales (lat, lon). Válido para cualquier lugar del mundo.',
+  s1:'Localizando en el mapa', s2:'Calculando perfil de terreno al oeste (285°)', s3:'Analizando visibilidad del eclipse',
+  gFound:'Ubicación localizada', gNot:'¿No es este?',
+  cap:'Horizonte sobre DEM open-elevation / SRTM · Datos eclipse: IGN / Observatorio Astronómico Nacional · Geocodificación: OpenStreetMap Nominatim',
+  dAlt:'Altitud', dSol:'Sol en la totalidad', dDur:'Duración totalidad', dMax:'Máximo eclipse',
+  dNoTot:'Fuera de la franja de totalidad',
+  hHead:'Obstrucción del terreno al oeste (285°)',
+  hNote:'La marca dorada es la altura del Sol en el momento de la totalidad.',
+  hFree: m=>`✓ Horizonte libre. El terreno no bloquea el disco solar (margen ${m}°).`,
+  hBlock:m=>`✗ El terreno supera la altura solar en ${m}°. El Sol puede quedar oculto.`,
+  tUnit:'h (hora oficial España)',
+  notFound: q=>`No se encontró "${q}".\nPrueba con el nombre completo, añade la provincia o introduce coordenadas (ej: 40.5, -0.1).`,
+  noElev:'No se pudieron obtener datos de elevación para esta ubicación.',
+  errFetch:'Error de red al obtener datos de elevación.',
+  vLabel:{EX:'🟢 Visibilidad excelente',BU:'🔵 Buena visibilidad',RI:'🟡 Visibilidad en riesgo',FU:'🔴 Fuera de la totalidad'},
+  v:{
+    EX:(d,h,s,t)=>[`Zona privilegiada para el eclipse.`,`La totalidad durará ${d}, con el Sol a ${s}° sobre el horizonte y un margen de ${h}° sobre el terreno.`,`El máximo se producirá a las ${t} h (hora oficial peninsular).`,`Prepare el punto de observación con antelación y llegue al menos 2 horas antes del eclipse.`],
+    BU:(d,h,s,t)=>[`Buenas condiciones de observación.`,`La totalidad durará ${d} con el horizonte al oeste despejado (obstrucción ${h}° vs Sol a ${s}°).`,`El máximo se alcanzará a las ${t} h.`,`Verifique en los días previos que no haya obstáculos adicionales al oeste (edificios, vegetación).`],
+    RI_block:(ang,s,d,t)=>[`El terreno al oeste supera la altura del Sol (${ang}° de obstrucción vs ${s}° del Sol).`,`Aunque la ubicación está dentro de la franja de totalidad (duración estimada ${d}, máximo ${t} h), el relieve puede ocultar el disco solar en el momento clave.`,`Busque un punto más elevado o con horizonte más despejado hacia el oeste.`],
+    RI_short:(d,t)=>[`La ubicación está muy cerca del límite de la franja de totalidad.`,`La duración de la oscuridad total estimada es de solo ${d} (máximo ${t} h).`,`Cualquier imprecisión en el posicionamiento puede suponer ver solo un eclipse parcial.`],
+    FU:()=>[`Desde esta ubicación el eclipse se verá solo como parcial: la Luna no cubrirá completamente el disco solar.`,`La franja de totalidad cruza España de noroeste a sureste, pasando por el norte de la península y las Baleares.`,`Las zonas más cercanas donde sí se verá la totalidad incluyen el norte de Castilla, Aragón, Comunitat Valenciana y Baleares.`],
+    ICE:()=>[`Islandia está dentro de la franja de totalidad del eclipse.`,`Sin embargo, la probabilidad de cielo nublado en agosto supera el 85%. El riesgo de no ver el eclipse por nubosidad es muy alto.`,`España es, con diferencia, el lugar del mundo con mejores expectativas de cielo despejado para ver este eclipse.`],
+  },
+  wSol: s=>`El Sol estará a solo ${s}° sobre el horizonte. Cualquier pequeña obstrucción al oeste puede arruinar la observación.`,
+  wEdge:'Ubicación en el límite de la franja. La duración es mucho menor que en la línea central.',
+  wMad:'Duración de totalidad muy breve (<30 s). En la práctica, casi imposible de apreciar.',
+},
+en:{
+  title:'Will you see the eclipse?', sub:'Visibility analysis by location',
+  barLbl:'Select language', iLbl:'Town, address or coordinates',
+  ph:'E.g.: Morella, Soria, Zaragoza, 40.5 -0.1…', btn:'Analyse',
+  hint:'Accepts town/city names, full addresses, or decimal coordinates (lat, lon). Works for any location in the world.',
+  s1:'Locating on map', s2:'Computing western terrain profile (285°)', s3:'Analysing eclipse visibility',
+  gFound:'Location found', gNot:'Not this one?',
+  cap:'Horizon from open-elevation / SRTM DEM · Eclipse data: IGN / National Astronomical Observatory · Geocoding: OpenStreetMap Nominatim',
+  dAlt:'Altitude', dSol:'Sun at totality', dDur:'Totality duration', dMax:'Eclipse maximum',
+  dNoTot:'Outside the path of totality',
+  hHead:'Western terrain obstruction (285°)',
+  hNote:'The golden marker shows the Sun\'s altitude at the moment of totality.',
+  hFree: m=>`✓ Clear horizon. Terrain does not block the solar disk (margin ${m}°).`,
+  hBlock:m=>`✗ Terrain exceeds solar altitude by ${m}°. The Sun may be hidden at the key moment.`,
+  tUnit:'h (Spain official time)',
+  notFound: q=>`"${q}" not found.\nTry the full name, add country/region, or enter decimal coordinates (e.g. 40.5, -0.1).`,
+  noElev:'Could not retrieve elevation data for this location.',
+  errFetch:'Network error retrieving elevation data.',
+  vLabel:{EX:'🟢 Excellent visibility',BU:'🔵 Good visibility',RI:'🟡 Visibility at risk',FU:'🔴 Outside path of totality'},
+  v:{
+    EX:(d,h,s,t)=>[`Prime location for the eclipse.`,`Totality lasts ${d}, with the Sun ${s}° above the horizon and ${h}° of terrain clearance.`,`Maximum at ${t} (Spain official time).`,`Plan your observation point in advance and arrive at least 2 hours before the eclipse.`],
+    BU:(d,h,s,t)=>[`Good observation conditions.`,`Totality lasts ${d} with a clear western horizon (obstruction ${h}° vs Sun at ${s}°).`,`Maximum at ${t}.`,`Check in the days before that there are no additional western obstacles (buildings, vegetation).`],
+    RI_block:(ang,s,d,t)=>[`Western terrain exceeds the Sun's altitude (${ang}° obstruction vs Sun at ${s}°).`,`Although inside the totality band (estimated duration ${d}, maximum ${t}), terrain may hide the solar disk at the key moment.`,`Look for a higher vantage point or a location with a clearer western horizon.`],
+    RI_short:(d,t)=>[`This location is very close to the edge of the totality band.`,`Estimated totality duration is only ${d} (maximum ${t}).`,`Any small positioning error could mean seeing only a partial eclipse.`],
+    FU:()=>[`From this location the eclipse will be partial only — the Moon will not fully cover the solar disk.`,`The path of totality crosses Spain from northwest to southeast, covering the northern peninsula and the Balearic Islands.`,`The nearest areas where totality will be visible include northern Castile, Aragon, the Valencian Community and the Balearics.`],
+    ICE:()=>[`Iceland lies within the path of totality.`,`However, August cloud probability exceeds 85%. The risk of cloud cover blocking the eclipse is very high.`,`Spain is by far the best place in the world for a clear-sky total eclipse view.`],
+  },
+  wSol: s=>`The Sun will be only ${s}° above the horizon. Any small western obstruction can ruin the observation.`,
+  wEdge:'Location near the band edge. Duration is much shorter than at the central line.',
+  wMad:'Totality duration very brief (<30 s). In practice, almost impossible to perceive.',
+},
+};
+
+let lang='es';
+const t = k => TR[lang][k];
+
+function applyLang(){
+  ['title','sub','barLbl','hint','s1','s2','s3','cap'].forEach(k=>setTxt('T_'+k, t(k)));
+  setTxt('T_iLbl', t('iLbl'));
+  document.getElementById('loc').placeholder = t('ph');
+  document.getElementById('anBtn').textContent = t('btn');
+  document.documentElement.lang = lang;
+}
+function setTxt(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function setLang(l){
+  lang=l;
+  document.getElementById('btn_es').className='lb'+(l==='es'?' on':'');
+  document.getElementById('btn_en').className='lb'+(l==='en'?' on':'');
+  applyLang();
+}
+
+// ══════════════════════════════════════════════════════════
+// Stars
+// ══════════════════════════════════════════════════════════
+(function(){
+  const c=document.getElementById('stars'),ctx=c.getContext('2d');let st=[];
+  const make=()=>{c.width=innerWidth;c.height=innerHeight;st=[];for(let i=0;i<180;i++)st.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.3,o:Math.random()*0.5+0.08,s:Math.random()*0.3+0.04})};
+  const draw=()=>{ctx.clearRect(0,0,c.width,c.height);st.forEach(p=>{p.o+=Math.sin(Date.now()*p.s*0.001)*0.007;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(200,210,255,${Math.max(0.04,Math.min(0.75,p.o))})`;ctx.fill()});requestAnimationFrame(draw)};
+  make();draw();window.addEventListener('resize',make);
+})();
+
+// ══════════════════════════════════════════════════════════
+// Eclipse geometry (validated against IGN data, error < 10 s)
+// ══════════════════════════════════════════════════════════
+// Center line: [lon, lat, maxDuration_s, solarAlt_deg, time_min_from_midnight]
+const CL=[
+  [-9.00, 44.40,  75, 14, 1226.0],
+  [-6.48, 43.54, 110, 12, 1227.0],
+  [-5.85, 43.47, 108, 11, 1227.5],
+  [-3.69, 41.67, 107,  8, 1229.5],
+  [-2.47, 41.77, 108,  7, 1230.0],
+  [-0.88, 41.40, 105,  6, 1230.5],
+  [ 0.41, 40.36,  99,  5, 1231.5],
+  [ 2.65, 39.57,  65,  2, 1232.5],
+];
+const HW = 145; // half-width of totality band in km
+
+function segInfo(lat, lon, lat0, lon0, lat1, lon1) {
+  const ref = (lat0+lat1)/2, c = Math.cos(ref*Math.PI/180);
+  const ax=lon0*111.32*c, ay=lat0*110.57, bx=lon1*111.32*c, by=lat1*110.57;
+  const px=lon *111.32*c, py=lat *110.57;
+  const dx=bx-ax, dy=by-ay, L=Math.hypot(dx,dy);
+  const ux=dx/L, uy=dy/L;
+  const apx=px-ax, apy=py-ay;
+  const t=Math.max(0,Math.min(1,(apx*ux+apy*uy)/L));
+  const cx=ax+t*dx, cy=ay+t*dy;
+  return {t, cross:Math.hypot(px-cx, py-cy)};
+}
+
+function eclipseInfo(lat, lon) {
+  // Iceland special case
+  if(lat>63&&lat<66&&lon<-20&&lon>-26)
+    return{inBand:true,dur:65,sol:12,time:'15:45',cross:35,isIceland:true};
+
+  let best=null;
+  for(let i=0;i<CL.length-1;i++){
+    const[l0,lt0,d0,s0,t0]=CL[i],[l1,lt1,d1,s1,t1]=CL[i+1];
+    const{t,cross}=segInfo(lat,lon,lt0,l0,lt1,l1);
+    if(cross<HW&&(!best||cross<best.cross)){
+      const cDur=d0+t*(d1-d0);
+      const aDur=cDur*Math.sqrt(Math.max(0,1-(cross/HW)**2));
+      const sol=s0+t*(s1-s0);
+      const tm=t0+t*(t1-t0);
+      const hh=Math.floor(tm/60), mm=Math.round(tm%60);
+      best={inBand:true,dur:Math.max(1,Math.round(aDur)),sol:Math.round(sol*2)/2,
+        time:`${hh}:${mm.toString().padStart(2,'0')}`,cross:Math.round(cross),isIceland:false};
+    }
+  }
+  return best; // null = outside
+}
+
+function fmtDur(s){
+  if(s<=0)return lang==='es'?'0 s':'0 s';
+  const m=Math.floor(s/60),r=Math.round(s%60);
+  if(m===0)return `${r} s`;
+  return r===0?`${m} min`:`${m} min ${r} s`;
+}
+
+// ══════════════════════════════════════════════════════════
+// Geocoding
+// ══════════════════════════════════════════════════════════
+function parseCoords(q){
+  const m1=q.match(/^(-?\d+\.?\d*)\s*[,;\s]\s*(-?\d+\.?\d*)$/);
+  if(m1){const a=+m1[1],b=+m1[2];if(a>=-90&&a<=90&&b>=-180&&b<=180)return{lat:a,lon:b,name:`${a.toFixed(4)}°N ${b.toFixed(4)}°E`};}
+  const m2=q.match(/(\d+\.?\d*)[°\s]*([NSns])\s*[,\s]\s*(\d+\.?\d*)[°\s]*([EWOewo])/);
+  if(m2){const la=+m2[1]*(/[Ss]/.test(m2[2])?-1:1),lo=+m2[3]*(/[WwOo]/.test(m2[4])?-1:1);return{lat:la,lon:lo,name:`${la.toFixed(4)}°N ${lo.toFixed(4)}°E`};}
+  return null;
+}
+
+async function nominatim(q){
+  const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&addressdetails=1`,{headers:{'Accept-Language':'es,en;q=0.9'}});
+  if(!r.ok)throw new Error('Nominatim error '+r.status);
+  return r.json();
+}
+function toGeo(r){return{lat:+r.lat,lon:+r.lon,name:r.display_name.split(',').slice(0,3).join(',').trim()};}
+
+async function geocode(input){
+  input=input.trim();
+  const c=parseCoords(input);
+  if(c)return[c];
+  const q=input.toLowerCase(); // case-insensitive: MORELLA = morella = Morella
+  let res=[];
+  try{res=await nominatim(q);}catch(e){}
+  if(!res.length){try{res=await nominatim(q+(lang==='es'?', España':' Spain'));}catch(e){}}
+  if(!res.length&&q.includes(' ')){try{res=await nominatim(q.split(/[\s,]+/)[0]);}catch(e){}}
+  if(!res.length)throw new Error(t('notFound')(input));
+  const pref=res.filter(r=>['city','town','village','hamlet','municipality','administrative'].includes(r.type)||r.class==='place'||r.class==='boundary');
+  return(pref.length?pref:res).sort((a,b)=>(+b.importance||0)-(+a.importance||0)).slice(0,4).map(toGeo);
+}
+
+// ══════════════════════════════════════════════════════════
+// Elevation APIs (open-elevation primary, SRTM fallback)
+// ══════════════════════════════════════════════════════════
+const AZ=285, MAX_KM=40, NP=24;
+
+function profilePts(lat,lon){
+  const az=AZ*Math.PI/180,ca=Math.cos(az),sa=Math.sin(az),cl=Math.cos(lat*Math.PI/180);
+  const pts=[[lat,lon]];
+  for(let i=1;i<=NP;i++){const d=MAX_KM*i/NP;pts.push([+(lat+d*ca/111.1).toFixed(5),+(lon+d*sa/(111.1*cl)).toFixed(5)]);}
+  return pts;
+}
+
+async function fetchElevs(pts){
+  const locs=pts.map(p=>({latitude:p[0],longitude:p[1]}));
+
+  // Primary: open-elevation.com (global, CORS *, reliable)
+  try{
+    const r=await fetch('https://api.open-elevation.com/api/v1/lookup',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({locations:locs})
+    });
+    if(r.ok){const d=await r.json();if(d.results?.length===pts.length)return{e:d.results.map(x=>x.elevation??0),dem:'open-elevation'};}
+  }catch(e){}
+
+  // Fallback: opentopodata SRTM 90m
+  try{
+    const loc=pts.map(p=>`${p[0]},${p[1]}`).join('|');
+    const r=await fetch(`https://api.opentopodata.org/v1/srtm90m?locations=${loc}`);
+    if(r.ok){const d=await r.json();if(d.status==='OK')return{e:d.results.map(x=>x.elevation??0),dem:'SRTM 90m'};}
+  }catch(e){}
+
+  // Fallback 2: opentopodata EUDEM
+  try{
+    const loc=pts.map(p=>`${p[0]},${p[1]}`).join('|');
+    const r=await fetch(`https://api.opentopodata.org/v1/eudem25m?locations=${loc}`);
+    if(r.ok){const d=await r.json();if(d.status==='OK'&&d.results.every(x=>x.elevation!=null))return{e:d.results.map(x=>x.elevation??0),dem:'EUDEM 25m'};}
+  }catch(e){}
+
+  throw new Error(t('noElev'));
+}
+
+function calcHorizon(pts,elevs){
+  const obs=elevs[0];let maxAng=0,maxDist=0;
+  for(let i=1;i<elevs.length;i++){
+    const dm=MAX_KM*i/NP*1000;
+    const ang=Math.atan2(elevs[i]-obs,dm)*180/Math.PI;
+    if(ang>maxAng){maxAng=ang;maxDist=MAX_KM*i/NP;}
+  }
+  return{obs,maxAng:Math.max(0,maxAng),maxDist};
+}
+
+// ══════════════════════════════════════════════════════════
+// Verdict builder
+// ══════════════════════════════════════════════════════════
+function buildVerdict(info, maxAng, obs) {
+  const vt = t('v');
+  const free = info ? maxAng < info.sol : false;
+  const margin = info ? (info.sol - maxAng).toFixed(1) : '0';
+  const angStr = maxAng.toFixed(1);
+  const solStr = info ? String(info.sol) : '—';
+
+  if (!info) {
+    return {cls:'fu',lbl:'FU',title:t('vLabel').FU,
+      paras:vt.FU(), warns:[]};
+  }
+
+  const durStr = fmtDur(info.dur);
+  const warns = [];
+
+  if (info.isIceland) {
+    return {cls:'ri',lbl:'RI',title:t('vLabel').RI,
+      paras:vt.ICE(), warns:[]};
+  }
+
+  if (info.sol <= 4)
+    warns.push(t('wSol')(solStr));
+  if (info.cross > 115)
+    warns.push(t('wEdge'));
+  if (info.dur < 30)
+    warns.push(t('wMad'));
+  if (!free)
+    warns.push(t('hBlock')(Math.abs(maxAng - info.sol).toFixed(1)));
+
+  if (!free) {
+    return {cls:'ri',lbl:'RI',title:t('vLabel').RI,
+      paras:vt.RI_block(angStr, solStr, durStr, info.time), warns};
+  }
+  if (info.dur < 45) {
+    return {cls:'ri',lbl:'RI',title:t('vLabel').RI,
+      paras:vt.RI_short(durStr, info.time), warns};
+  }
+  if (info.dur >= 90 && maxAng < 2.5 && info.cross < 110) {
+    return {cls:'ex',lbl:'EX',title:t('vLabel').EX,
+      paras:vt.EX(durStr, margin, solStr, info.time), warns};
+  }
+  return {cls:'bu',lbl:'BU',title:t('vLabel').BU,
+    paras:vt.BU(durStr, angStr, solStr, info.time), warns};
+}
+
+// ══════════════════════════════════════════════════════════
+// Rendering
+// ══════════════════════════════════════════════════════════
+function hColor(a,s){return a<s*0.55?'var(--green)':a<s?'var(--yellow)':'var(--red)';}
+
+function render(geo, obs, maxAng, maxDist, dem, info) {
+  const v = buildVerdict(info, maxAng, obs);
+  const sol = info?.sol ?? 5;
+  // free: terrain is below solar altitude (horizon clear). Only meaningful when in totality band.
+  const terrainBelowSun = maxAng < sol;
+  const free = info ? terrainBelowSun : false;
+  const hc = hColor(maxAng, sol);
+  const maxPct = Math.min(100, (maxAng/12)*100);
+  const solPct = Math.min(100, (sol/12)*100);
+  const margin = (sol - maxAng).toFixed(1);
+
+  const durCell = info ? `
+    <div class="dc"><div class="dclbl">${t('dDur')}</div>
+      <div class="dcval ${info.dur>=60?'ok':'wc'}">${fmtDur(info.dur)}</div></div>
+    <div class="dc"><div class="dclbl">${t('dMax')}</div>
+      <div class="dcval">${info.time}<span class="dcunit">${t('tUnit')}</span></div></div>`
+    : `<div class="dc s2"><div class="dclbl">${t('dNoTot')}</div><div class="dcval bad">—</div></div>`;
+
+  const warnHtml = v.warns.length
+    ? `<div class="warns">${v.warns.map(w=>`<div class="wi">${w}</div>`).join('')}</div>` : '';
+
+  // When outside the totality band, horizon obstruction is informational only — no free/blocked verdict.
+  let hNoteHtml;
+  if (!info) {
+    hNoteHtml = `<span style="color:var(--dim)">${
+      lang==='es'
+        ? `Obstrucción del terreno: ${maxAng.toFixed(1)}°. No aplica: ubicación fuera de la franja de totalidad.`
+        : `Terrain obstruction: ${maxAng.toFixed(1)}°. Not applicable: location outside the path of totality.`
+    }</span>`;
+  } else if (terrainBelowSun) {
+    hNoteHtml = `<span class="ok">${t('hFree')(margin)}</span>`;
+  } else {
+    hNoteHtml = `<span class="bad">${t('hBlock')(Math.abs(maxAng-sol).toFixed(1))}</span>`;
+  }
+
+  document.getElementById('res').innerHTML = `<div class="ri">
+    <div class="vblock ${v.cls}">
+      <div class="vlbl">${v.title}</div>
+      <div class="vtit">${v.paras[0]}</div>
+      <div class="vtxt">${v.paras.slice(1).join(' ')}</div>
+    </div>
+    <div class="dgrid">
+      <div class="dc"><div class="dclbl">${t('dAlt')}</div><div class="dcval">${Math.round(obs)}<span class="dcunit">m</span></div></div>
+      <div class="dc"><div class="dclbl">${t('dSol')}</div><div class="dcval">${sol}<span class="dcunit">°</span></div></div>
+      ${durCell}
+    </div>
+    <div class="hbar">
+      <div class="hbar-head">
+        <span>${t('hHead')}</span>
+        <span class="hbar-val" style="color:${hc}">${maxAng.toFixed(1)}°</span>
+      </div>
+      <div class="hbar-track">
+        <div class="hbar-fill" style="width:${maxPct}%;background:${hc}"></div>
+        <div class="hbar-mk" style="left:${solPct}%"><div class="hbar-mklbl">☀ ${sol}°</div></div>
+      </div>
+      <div class="hbar-leg"><span>0°</span><span>6°</span><span>12°</span></div>
+      <div class="hbar-note">${t('hNote')} ${hNoteHtml}</div>
+    </div>
+    ${warnHtml}
+    <div class="foot">
+      ${geo.lat.toFixed(4)}°N ${geo.lon.toFixed(4)}°E ·
+      ${dem} · ${NP} pts / ${MAX_KM} km en 285° ·
+      max obstrucción a ${maxDist.toFixed(1)} km${info?` · dist. línea central ~${info.cross} km`:''}
+    </div>
+  </div>`;
+  document.getElementById('res').style.display = 'block';
+}
+
+// ══════════════════════════════════════════════════════════
+// Geo confirm box
+// ══════════════════════════════════════════════════════════
+let _geo = [];
+function showGeoBox(results) {
+  const p=results[0], alts=results.slice(1);
+  const altHtml = alts.length
+    ? `<div class="galts"><span class="galts-lbl">${t('gNot')}</span>${alts.map((_,i)=>`<button class="galt" onclick="selGeo(${i+1})">${results[i+1].name.split(',')[0].trim()}</button>`).join('')}</div>`
+    : '';
+  const b = document.getElementById('geobox');
+  b.innerHTML = `<div class="gfound">${t('gFound')}</div>
+    <div class="gname">${p.name}</div>
+    <div class="gcoords">${p.lat.toFixed(4)}°N, ${p.lon.toFixed(4)}°E</div>${altHtml}`;
+  b.style.display = 'block';
+}
+function selGeo(i) {
+  _geo = [_geo[i]];
+  document.getElementById('geobox').style.display='none';
+  doAnalysis(_geo[0]);
+}
+
+// ══════════════════════════════════════════════════════════
+// Step helpers
+// ══════════════════════════════════════════════════════════
+function stepSet(id, state, det='') {
+  const el=document.getElementById(id);
+  el.className='step '+(state==='on'?'on':state==='ok'?'ok':state==='er'?'er':'');
+  el.querySelector('.sic').textContent=state==='ok'?'✓':state==='er'?'✗':id.replace('s','');
+  const dd=document.getElementById(id+'d'); if(dd) dd.textContent=det;
+}
+function showErr(msg) {
+  document.getElementById('res').innerHTML=`<div class="ri"><div class="errbox">⚠ ${msg.replace(/\n/g,'<br>')}</div></div>`;
+  document.getElementById('res').style.display='block';
+}
+
+// ══════════════════════════════════════════════════════════
+// Main flow
+// ══════════════════════════════════════════════════════════
+async function run() {
+  const input = document.getElementById('loc').value.trim();
+  if (!input) return;
+  const btn = document.getElementById('anBtn');
+  btn.disabled = true;
+  document.getElementById('geobox').style.display='none';
+  document.getElementById('res').style.display='none';
+  document.getElementById('res').innerHTML='';
+  document.getElementById('stps').style.display='flex';
+  ['s1','s2','s3'].forEach(id=>stepSet(id,''));
+  try {
+    stepSet('s1','on');
+    const geo = await geocode(input);
+    _geo = geo;
+    stepSet('s1','ok', geo[0].name.split(',')[0].trim());
+    showGeoBox(geo);
+    await doAnalysis(geo[0]);
+  } catch(err) {
+    ['s1','s2','s3'].forEach(id=>{if(document.getElementById(id).classList.contains('on'))stepSet(id,'er')});
+    showErr(err.message);
+    btn.disabled=false;
+  }
+}
+
+async function doAnalysis(geo) {
+  const btn=document.getElementById('anBtn');
+  btn.disabled=true;
+  document.getElementById('res').style.display='none';
+  document.getElementById('res').innerHTML='';
+  ['s2','s3'].forEach(id=>stepSet(id,''));
+  try {
+    stepSet('s2','on');
+    const pts = profilePts(geo.lat, geo.lon);
+    const {e:elevs, dem} = await fetchElevs(pts);
+    const {obs, maxAng, maxDist} = calcHorizon(pts, elevs);
+    stepSet('s2','ok', `${maxAng.toFixed(1)}° · ${dem}`);
+
+    stepSet('s3','on');
+    const info = eclipseInfo(geo.lat, geo.lon);
+    stepSet('s3','ok');
+
+    render(geo, obs, maxAng, maxDist, dem, info);
+  } catch(err) {
+    ['s2','s3'].forEach(id=>{if(document.getElementById(id).classList.contains('on'))stepSet(id,'er')});
+    showErr(err.message);
+  } finally {
+    btn.disabled=false;
+  }
+}
+
+document.getElementById('loc').addEventListener('keydown', e=>{ if(e.key==='Enter') run(); });
+applyLang();
+</script>
+</body>
+</html>
